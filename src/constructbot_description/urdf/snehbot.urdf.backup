@@ -1,0 +1,674 @@
+<?xml version="1.0"?>
+<!--
+  ConstructBot - Custom Mobile Robot URDF
+  A differential drive mobile base designed for autonomous construction tasks.
+  Sensors: IMU, 2D LiDAR, RGB-D Camera, Wheel Encoders
+  Arm mount point: top_plate_link (for UR5e or similar)
+  Author: (your name)
+  Compatible with: ROS2 Humble, Isaac Sim (URDF Importer)
+-->
+<robot name="constructbot">
+
+  <!-- ===================================================================
+       MATERIALS
+  =================================================================== -->
+  <material name="dark_grey">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  <material name="light_grey">
+    <color rgba="0.6 0.6 0.6 1.0"/>
+  </material>
+  <material name="orange">
+    <color rgba="0.95 0.45 0.05 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.1 0.3 0.8 1.0"/>
+  </material>
+  <material name="white">
+    <color rgba="0.9 0.9 0.9 1.0"/>
+  </material>
+
+  <!-- ===================================================================
+       BASE LINK  (main chassis)
+       Dimensions: 0.80m long x 0.60m wide x 0.18m tall
+       Slightly larger than Husky (0.99 x 0.67) but cleaner proportions
+  =================================================================== -->
+  <link name="base_link">
+    <inertial>
+      <mass value="40.0"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <!-- Solid box inertia: I = m/12 * (h^2+d^2) etc. -->
+      <inertia
+        ixx="0.6458" ixy="0.0" ixz="0.0"
+        iyy="0.9400" iyz="0.0"
+        izz="1.3850"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.80 0.60 0.18"/>
+      </geometry>
+      <material name="dark_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.80 0.60 0.18"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ===================================================================
+       WHEEL MACRO (repeated 4 times)
+       Wheel radius: 0.165m, width: 0.09m
+       Wheelbase (front-rear): 0.52m
+       Track width (left-right): 0.72m
+  =================================================================== -->
+
+  <!-- FRONT LEFT WHEEL -->
+  <link name="front_left_wheel">
+    <inertial>
+      <mass value="2.5"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.0095" ixy="0.0" ixz="0.0"
+        iyy="0.0170" iyz="0.0"
+        izz="0.0095"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_left_wheel"/>
+    <origin xyz="0.26 0.36 -0.09" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+
+  <!-- FRONT RIGHT WHEEL -->
+  <link name="front_right_wheel">
+    <inertial>
+      <mass value="2.5"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.0095" ixy="0.0" ixz="0.0"
+        iyy="0.0170" iyz="0.0"
+        izz="0.0095"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_right_wheel"/>
+    <origin xyz="0.26 -0.36 -0.09" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+
+  <!-- REAR LEFT WHEEL -->
+  <link name="rear_left_wheel">
+    <inertial>
+      <mass value="2.5"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.0095" ixy="0.0" ixz="0.0"
+        iyy="0.0170" iyz="0.0"
+        izz="0.0095"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rear_left_wheel"/>
+    <origin xyz="-0.26 0.36 -0.09" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+
+  <!-- REAR RIGHT WHEEL -->
+  <link name="rear_right_wheel">
+    <inertial>
+      <mass value="2.5"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.0095" ixy="0.0" ixz="0.0"
+        iyy="0.0170" iyz="0.0"
+        izz="0.0095"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.165" length="0.09"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rear_right_wheel"/>
+    <origin xyz="-0.26 -0.36 -0.09" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+
+  <!-- ===================================================================
+       TOP PLATE
+       Raised platform for arm + sensor arch mounting
+  =================================================================== -->
+  <link name="top_plate_link">
+    <inertial>
+      <mass value="1.5"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.0480" ixy="0.0" ixz="0.0"
+        iyy="0.0270" iyz="0.0"
+        izz="0.0720"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.76 0.56 0.01"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.76 0.56 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="top_plate_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="top_plate_link"/>
+    <origin xyz="0.0 0.0 0.095" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       SENSOR ARCH
+       Vertical arch that holds camera + LiDAR at a good height
+  =================================================================== -->
+
+  <!-- Left arch post -->
+  <link name="arch_left_post">
+    <inertial>
+      <mass value="0.3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.03 0.35"/></geometry>
+      <material name="light_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.03 0.35"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="arch_left_joint" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="arch_left_post"/>
+    <origin xyz="0.10 0.24 0.18" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Right arch post -->
+  <link name="arch_right_post">
+    <inertial>
+      <mass value="0.3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.03 0.35"/></geometry>
+      <material name="light_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.03 0.35"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="arch_right_joint" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="arch_right_post"/>
+    <origin xyz="0.10 -0.24 0.18" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Arch crossbar (top bar connecting the two posts) -->
+  <link name="arch_crossbar">
+    <inertial>
+      <mass value="0.4"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.003" iyz="0" izz="0.003"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.51 0.03"/></geometry>
+      <material name="light_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.03 0.51 0.03"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="arch_crossbar_joint" type="fixed">
+    <parent link="arch_left_post"/>
+    <child link="arch_crossbar"/>
+    <origin xyz="0.0 -0.255 0.175" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       ARM MOUNT PLATE
+       Rear portion of top plate — where the robot arm attaches
+       This is the reference frame you will use when mounting UR5e
+  =================================================================== -->
+  <link name="arm_mount_link">
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.20 0.20 0.02"/></geometry>
+      <material name="orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.20 0.20 0.02"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="arm_mount_joint" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="arm_mount_link"/>
+    <origin xyz="-0.20 0.0 0.015" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       IMU SENSOR LINK
+       Mounted at center of chassis, slightly elevated
+  =================================================================== -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.04 0.01"/></geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.04 0.01"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <!-- Dead center of chassis, on top surface -->
+    <origin xyz="0.0 0.0 0.092" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       LIDAR SENSOR LINK
+       2D LiDAR mounted on top of arch crossbar, front-facing
+       This is where you attach the Isaac Sim LiDAR prim
+  =================================================================== -->
+  <link name="lidar_link">
+    <inertial>
+      <mass value="0.18"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Cylinder approximating a typical 2D LiDAR housing -->
+        <cylinder radius="0.04" length="0.07"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.04" length="0.07"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="lidar_link"/>
+    <!-- Center of top plate, slightly elevated for 360 view -->
+    <origin xyz="0.0 0.0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       CAMERA LINK (RGB-D)
+       Forward-facing camera on the sensor arch crossbar
+       Includes optical frame with standard ROS convention rotation
+  =================================================================== -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.085"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00003" ixy="0" ixz="0" iyy="0.00003" iyz="0" izz="0.00003"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Slim box resembling a RealSense D435 -->
+        <box size="0.025 0.09 0.025"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.09 0.025"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="camera_link"/>
+    <!-- Front of top plate, low height, facing forward -->
+    <origin xyz="0.30 0.0 0.06" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Camera optical frame: ROS convention is Z forward, X right, Y down -->
+  <!-- This is important for image topic transforms to work correctly in ROS2 -->
+  <link name="camera_optical_frame">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <!-- Standard ROS camera optical frame rotation -->
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+  <!-- ===================================================================
+       ENCODER FRAMES
+       Virtual frames representing where encoder data originates.
+       Used by robot_localization / EKF in ROS2.
+       These are fixed frames coincident with each wheel center.
+  =================================================================== -->
+  <link name="left_encoder_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="left_encoder_joint" type="fixed">
+    <parent link="front_left_wheel"/>
+    <child link="left_encoder_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="right_encoder_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="right_encoder_joint" type="fixed">
+    <parent link="front_right_wheel"/>
+    <child link="right_encoder_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================================================================
+       FOOTPRINT LINK
+       Standard ROS convention: base_footprint is the 2D projection
+       of base_link onto the ground. Required by Nav2.
+  =================================================================== -->
+  <link name="base_footprint">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <!-- base_footprint sits on the ground (Z = wheel_radius below base_link center) -->
+    <origin xyz="0.0 0.0 -0.165" rpy="0 0 0"/>
+  </joint>
+
+
+  <!-- ===================================================================
+       4-DOF ROBOTIC ARM WITH SUCTION CUP
+       Attached to arm_mount_link at rear of robot
+       Joint 1: Base rotation (yaw)   - rotates arm left/right
+       Joint 2: Shoulder pitch        - raises/lowers arm
+       Joint 3: Elbow pitch           - extends/retracts arm
+       Joint 4: Wrist pitch           - tilts suction cup
+  =================================================================== -->
+
+  <!-- ARM BASE LINK - short cylinder raising arm above mount plate -->
+  <link name="arm_base_link">
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.04" length="0.08"/></geometry>
+      <material name="dark_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.04" length="0.08"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="arm_base_fixed_joint" type="fixed">
+    <parent link="arm_mount_link"/>
+    <child link="arm_base_link"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- SHOULDER LINK - 15cm vertical link -->
+  <link name="arm_shoulder_link">
+    <inertial>
+      <mass value="0.4"/>
+      <origin xyz="0 0 0.075" rpy="0 0 0"/>
+      <inertia ixx="0.0008" ixy="0" ixz="0" iyy="0.0008" iyz="0" izz="0.0002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.075" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.04 0.15"/></geometry>
+      <material name="orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.075" rpy="0 0 0"/>
+      <geometry><box size="0.04 0.04 0.15"/></geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 1: Rotates whole arm left/right around Z axis -->
+  <joint name="arm_joint1" type="revolute">
+    <parent link="arm_base_link"/>
+    <child link="arm_shoulder_link"/>
+    <origin xyz="0 0 0.08" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.356" upper="2.356" effort="50" velocity="1.0"/>
+    <dynamics damping="0.5" friction="0.1"/>
+  </joint>
+
+  <!-- ELBOW LINK - 12cm horizontal link extending forward -->
+  <link name="arm_elbow_link">
+    <inertial>
+      <mass value="0.3"/>
+      <origin xyz="0.06 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0002" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.06 0 0" rpy="0 1.5708 0"/>
+      <geometry><box size="0.04 0.04 0.12"/></geometry>
+      <material name="orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0.06 0 0" rpy="0 1.5708 0"/>
+      <geometry><box size="0.04 0.04 0.12"/></geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 2: Raises and lowers arm around Y axis -->
+  <joint name="arm_joint2" type="revolute">
+    <parent link="arm_shoulder_link"/>
+    <child link="arm_elbow_link"/>
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="50" velocity="1.0"/>
+    <dynamics damping="0.5" friction="0.1"/>
+  </joint>
+
+  <!-- WRIST LINK - 8cm link -->
+  <link name="arm_wrist_link">
+    <inertial>
+      <mass value="0.2"/>
+      <origin xyz="0.04 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.04 0 0" rpy="0 1.5708 0"/>
+      <geometry><box size="0.035 0.035 0.08"/></geometry>
+      <material name="light_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.04 0 0" rpy="0 1.5708 0"/>
+      <geometry><box size="0.035 0.035 0.08"/></geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 3: Extends or retracts arm around Y axis -->
+  <joint name="arm_joint3" type="revolute">
+    <parent link="arm_elbow_link"/>
+    <child link="arm_wrist_link"/>
+    <origin xyz="0.12 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-2.356" upper="0.785" effort="30" velocity="1.0"/>
+    <dynamics damping="0.3" friction="0.1"/>
+  </joint>
+
+  <!-- SUCTION CUP END EFFECTOR -->
+  <link name="suction_link">
+    <inertial>
+      <mass value="0.05"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.015 0 0" rpy="0 1.5708 0"/>
+      <geometry><cylinder radius="0.025" length="0.03"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.015 0 0" rpy="0 1.5708 0"/>
+      <geometry><cylinder radius="0.025" length="0.03"/></geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 4: Tilts suction cup around Y axis -->
+  <joint name="arm_joint4" type="revolute">
+    <parent link="arm_wrist_link"/>
+    <child link="suction_link"/>
+    <origin xyz="0.08 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="20" velocity="1.0"/>
+    <dynamics damping="0.2" friction="0.1"/>
+  </joint>
+
+  <!-- TCP (Tool Center Point) - exact pickup point for MoveIt2 -->
+  <link name="tcp_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="tcp_joint" type="fixed">
+    <parent link="suction_link"/>
+    <child link="tcp_link"/>
+    <origin xyz="0.03 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>

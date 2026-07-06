@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<robot name="constructbot">
+
+  <group name="arm">
+    <chain base_link="base" tip_link="wrist"/>
+  </group>
+
+  <group name="gripper">
+    <link name="suction"/>
+  </group>
+
+  <end_effector name="suction_end_effector"
+                parent_link="wrist"
+                group="gripper"/>
+
+  <group_state name="home" group="arm">
+    <joint name="shoulder_joint" value="0"/>
+    <joint name="elbow_joint" value="0"/>
+    <joint name="wrist_joint" value="0"/>
+  </group_state>
+
+  <group_state name="ready" group="arm">
+    <joint name="shoulder_joint" value="0"/>
+    <joint name="elbow_joint" value="0.785"/>
+    <joint name="wrist_joint" value="-0.785"/>
+  </group_state>
+
+  <disable_collisions link1="base" link2="shoulder" reason="Adjacent"/>
+  <disable_collisions link1="shoulder" link2="elbow" reason="Adjacent"/>
+  <disable_collisions link1="elbow" link2="wrist" reason="Adjacent"/>
+  <disable_collisions link1="wrist" link2="suction" reason="Adjacent"/>
+  <disable_collisions link1="base" link2="arm_mount_link" reason="Adjacent"/>
+  <disable_collisions link1="arm_mount_link" link2="top_plate_link" reason="Adjacent"/>
+
+</robot>

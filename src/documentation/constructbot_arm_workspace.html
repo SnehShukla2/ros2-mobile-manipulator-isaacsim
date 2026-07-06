@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConstructBot Arm Workspace</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #0b0b0b; padding: 2rem; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
+  .subtitle { font-size: 13px; color: #898781; margin-bottom: 1.5rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .card { background: #f1efe8; border-radius: 8px; padding: 0.85rem 1rem; }
+  .card-label { font-size: 12px; color: #5f5e5a; margin-bottom: 4px; }
+  .card-value { font-size: 20px; font-weight: 500; }
+  .card-sub { font-size: 11px; color: #898781; margin-top: 3px; }
+  .legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: #5f5e5a; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .swatch-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .swatch-line { width: 18px; height: 3px; border-radius: 1px; display: inline-block; }
+  .chart-wrap { position: relative; width: 100%; height: 480px; background: #fff; border: 0.5px solid #e1e0d9; border-radius: 8px; padding: 1rem; }
+  .note { margin-top: 1rem; padding: 0.75rem 1rem; background: #f1efe8; border-radius: 8px; font-size: 13px; color: #5f5e5a; line-height: 1.6; }
+  .note strong { color: #0b0b0b; }
+  .joint-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 13px; }
+  .joint-table th { text-align: left; padding: 8px 12px; background: #f1efe8; font-weight: 500; border-bottom: 1px solid #d3d1c7; }
+  .joint-table td { padding: 8px 12px; border-bottom: 0.5px solid #e1e0d9; }
+  .joint-table tr:last-child td { border-bottom: none; }
+  h2 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 0.75rem; }
+</style>
+</head>
+<body>
+
+<h1>ConstructBot — Arm Workspace Visualization</h1>
+<p class="subtitle">3-DOF arm reachable zone · XZ plane (shoulder yaw = 0°) · all distances in metres</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">shoulder range</div>
+    <div class="card-value">±180°</div>
+    <div class="card-sub">yaw — Z axis</div>
+  </div>
+  <div class="card">
+    <div class="card-label">elbow range</div>
+    <div class="card-value">0–150°</div>
+    <div class="card-sub">pitch — Y axis</div>
+  </div>
+  <div class="card">
+    <div class="card-label">wrist range</div>
+    <div class="card-value">±90°</div>
+    <div class="card-sub">pitch — Y axis</div>
+  </div>
+  <div class="card">
+    <div class="card-label">shoulder→wrist length</div>
+    <div class="card-value">0.50 m</div>
+    <div class="card-sub">L1=0.25m + L2=0.25m</div>
+  </div>
+  <div class="card">
+    <div class="card-label">home wrist pose</div>
+    <div class="card-value">(0.40, 0.40)</div>
+    <div class="card-sub">x, z from arm base</div>
+  </div>
+  <div class="card">
+    <div class="card-label">pick wrist pose</div>
+    <div class="card-value">(0.30, 0.20)</div>
+    <div class="card-sub">el=53° wr=-53°</div>
+  </div>
+</div>
+
+<div class="legend">
+  <span><span class="swatch" style="background:rgba(42,120,214,0.15);border:1px solid #2a78d6;"></span>reachable zone</span>
+  <span><span class="swatch-dot" style="background:#2a78d6;"></span>confirmed IK poses</span>
+  <span><span class="swatch-line" style="background:#e34948;"></span>home pose (all joints 0°)</span>
+  <span><span class="swatch-line" style="background:#eda100;"></span>pick pose (el=53°, wr=-53°)</span>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="wsChart" role="img" aria-label="ConstructBot arm workspace scatter plot. Reachable zone shown as blue dots. Home pose arm in red reaches wrist at (0.40, 0.40). Pick pose arm in orange reaches wrist at (0.30, 0.20). Two blue confirmed IK points marked.">
+    Reachable wrist positions: home (0.40m forward, 0.40m up), pick pose (0.30m forward, 0.20m up).
+  </canvas>
+</div>
+
+<div class="note">
+  <strong>How to read this chart:</strong> The arm base (shoulder joint) sits at the origin (0, 0). X = forward distance from the base; Z = height above the base. The shaded zone shows all wrist positions reachable by varying elbow and wrist angles. Shoulder rotation sweeps this entire zone through ±180° around the vertical axis, creating a 3D reachable volume. The zone is asymmetric because the elbow only bends forward (0–150°), not backward.
+</div>
+
+<h2>Joint geometry reference</h2>
+<table class="joint-table">
+  <tr><th>Segment</th><th>Link</th><th>Length</th><th>Joint</th><th>Axis</th><th>Limits</th></tr>
+  <tr><td>1</td><td>base → shoulder</td><td>0.25 m (vertical)</td><td>shoulder_joint</td><td>Z (yaw)</td><td>−180° to +180°</td></tr>
+  <tr><td>2</td><td>shoulder → elbow</td><td>0.15 m (x) + 0.15 m (z)</td><td>elbow_joint</td><td>Y (pitch)</td><td>0° to 150°</td></tr>
+  <tr><td>3</td><td>elbow → wrist</td><td>0.25 m (horizontal)</td><td>wrist_joint</td><td>Y (pitch)</td><td>−90° to +90°</td></tr>
+  <tr><td>4</td><td>wrist → suction</td><td>0.12 m + −0.055 m (z)</td><td>suction_joint</td><td>fixed</td><td>N/A</td></tr>
+</table>
+
+<h2>Confirmed reachable IK poses</h2>
+<table class="joint-table">
+  <tr><th>Wrist target (x, z) in base frame</th><th>shoulder_joint</th><th>elbow_joint</th><th>wrist_joint</th><th>Use</th></tr>
+  <tr><td>(0.40 m, 0.40 m)</td><td>0°</td><td>0°</td><td>0°</td><td>Home / rest pose</td></tr>
+  <tr><td>(0.30 m, 0.20 m)</td><td>0°</td><td>53.1°</td><td>−53.1°</td><td>Pick pose (arm bent down)</td></tr>
+</table>
+
+<script>
+const L1 = 0.25, L2 = 0.25;
+
+function fk(e_deg, w_deg) {
+  const e = e_deg * Math.PI / 180;
+  const w = w_deg * Math.PI / 180;
+  return {
+    x: parseFloat((L1 * Math.sin(e) + L2 * Math.sin(e + w)).toFixed(3)),
+    y: parseFloat((L1 * Math.cos(e) + L2 * Math.cos(e + w)).toFixed(3))
+  };
+}
+
+const reachable = [];
+for (let e = 0; e <= 150; e += 2) {
+  for (let w = -90; w <= 90; w += 2) {
+    const p = fk(e, w);
+    if (p.x >= -0.1 && p.x <= 0.72 && p.y >= -0.15 && p.y <= 0.72) {
+      reachable.push({ x: p.x, y: p.y });
+    }
+  }
+}
+
+function armPts(e_deg, w_deg) {
+  const e = e_deg * Math.PI / 180;
+  const w = w_deg * Math.PI / 180;
+  return [
+    { x: 0, y: 0 },
+    { x: 0, y: L1 },
+    { x: parseFloat((L1 * Math.sin(e)).toFixed(3)), y: parseFloat((L1 * Math.cos(e)).toFixed(3)) },
+    { x: parseFloat((L1 * Math.sin(e) + L2 * Math.sin(e+w)).toFixed(3)), y: parseFloat((L1 * Math.cos(e) + L2 * Math.cos(e+w)).toFixed(3)) }
+  ];
+}
+
+function armDs(pts, color, label) {
+  return {
+    label, data: pts.map(p => ({ x: p.x, y: p.y })),
+    borderColor: color, backgroundColor: color,
+    borderWidth: 2.5, pointRadius: [5, 3, 3, 7],
+    pointStyle: ['circle','circle','circle','rectRot'],
+    showLine: true, tension: 0, order: 1
+  };
+}
+
+new Chart(document.getElementById('wsChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'reachable zone',
+        data: reachable,
+        backgroundColor: 'rgba(42,120,214,0.10)',
+        borderColor: 'rgba(42,120,214,0.22)',
+        pointRadius: 3, pointStyle: 'circle', order: 3
+      },
+      armDs(armPts(0, 0), '#e34948', 'home pose'),
+      armDs(armPts(53.1, -53.1), '#eda100', 'pick pose'),
+      {
+        label: 'confirmed IK',
+        data: [{ x: 0.40, y: 0.40 }, { x: 0.30, y: 0.20 }],
+        backgroundColor: '#2a78d6', borderColor: '#fff',
+        pointRadius: 8, pointBorderWidth: 2.5,
+        pointStyle: 'circle', showLine: false, order: 0
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => `(${ctx.parsed.x.toFixed(2)} m, ${ctx.parsed.y.toFixed(2)} m)`
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'x — forward from arm base (m)', color: '#898781', font: { size: 12 } },
+        min: -0.15, max: 0.75,
+        grid: { color: '#e1e0d9' },
+        ticks: { color: '#898781', callback: v => v.toFixed(1) + 'm' }
+      },
+      y: {
+        title: { display: true, text: 'z — height from arm base (m)', color: '#898781', font: { size: 12 } },
+        min: -0.15, max: 0.75,
+        grid: { color: '#e1e0d9' },
+        ticks: { color: '#898781', callback: v => v.toFixed(1) + 'm' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

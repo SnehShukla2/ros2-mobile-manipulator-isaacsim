@@ -1,0 +1,24 @@
+digraph G {
+"world" -> "constructbot"[label=" Broadcaster: default_authority\nAverage rate: 60.952\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 60.952\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "base_footprint"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "front_left_wheel"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "front_right_wheel"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "imu_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "rear_left_wheel"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "rear_right_wheel"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "top_plate_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "left_encoder_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "right_encoder_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "arch_left_post"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "arch_right_post"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "arm_mount_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "arch_crossbar"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "camera_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "lidar_link"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+"world" -> "camera_optical_frame"[label=" Broadcaster: default_authority\nAverage rate: 121.905\nBuffer length: 1.05\nMost recent transform: 6309.966996\nOldest transform: 6308.916996\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1778282406.316334"[ shape=plaintext ] ;
+}->"world";
+}

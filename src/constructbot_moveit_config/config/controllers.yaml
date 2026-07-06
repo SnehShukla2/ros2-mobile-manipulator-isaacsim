@@ -1,0 +1,15 @@
+controller_manager_ros__parameters:
+  update_rate: 100
+
+arm_controller:
+  type: joint_trajectory_controller/JointTrajectoryController
+  joints:
+    - shoulder_joint
+    - elbow_joint
+    - wrist_joint
+  command_interfaces:
+    - position
+  state_interfaces:
+    - position
+  action_ns: follow_joint_trajectory
+  default: true
