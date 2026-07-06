@@ -6,6 +6,9 @@ LiDAR/vision-based mapping, camera-guided object detection, MoveIt2 motion plann
 pick-and-place task executor — entirely in simulation, with the simulator and the ROS2 stack
 running on two different operating systems talking over the network in real time.
 
+<img width="487" height="437" alt="image" src="https://github.com/user-attachments/assets/349d35ba-0f40-4d64-a870-0f3205f88a88" />
+
+
 ## Why this project is interesting
 
 Most "ROS2 + robot arm" tutorials assume the simulator and the ROS2 graph live in the same Linux
@@ -86,6 +89,9 @@ fallback when the full `slam_toolbox` stack isn't needed.
 
 Scan-matching odometry is provided separately by a ROS2 port of `scan_tools`'
 `laser_scan_matcher`, built against a vendored copy of the `csm` (Canonical Scan Matcher) C library.
+
+<img width="568" height="566" alt="image" src="https://github.com/user-attachments/assets/07785e6d-aa3a-4564-b2b5-f8dce71703ef" />
+
 
 ## Getting Started / How to Run
 
