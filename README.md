@@ -51,9 +51,9 @@ each other, and since the WSL2 IP changes every session, it has to be re-verifie
 
 One deliberate design constraint this exposed: **Isaac Sim publishes `/tf` but never
 `/joint_states`.** Since MoveIt2's IK solver needs a joint-state seed to work from, a small bridge
-node recovers the arm's joint angles by walking the TF chain (`base→shoulder→shoulder→elbow→
-elbow→wrist`) and republishing them as `/joint_states` at 20 Hz — turning a one-line ROS2
-convenience most tutorials take for granted into an explicit piece of the pipeline.
+node recovers the arm's joint angles with three separate pairwise TF lookups (`base→shoulder`,
+`shoulder→elbow`, `elbow→wrist`) and republishes them as `/joint_states` at 20 Hz — turning a
+one-line ROS2 convenience most tutorials take for granted into an explicit piece of the pipeline.
 
 ## Pick-and-place pipeline
 
